@@ -1,12 +1,13 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const JobApply = () => {
   const { id } = useParams();
   console.log(id);
 
-  const {user} = useAuth(); 
-
+  const { user } = useAuth();
 
   const submitJobApplication = (e) => {
     e.preventDefault();
@@ -25,15 +26,33 @@ const JobApply = () => {
       applicant_email: user.email,
       linkedIn,
       github,
-      resume
+      resume,
     };
 
-    // Send applicationData to the server
+    fetch("http://localhost:5000/job_applications", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(jobApplication),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        //
+        if (data.insertedId) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your work has been saved",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      });
   };
 
   return (
     <div className="card bg-base-100 w-full shadow-2xl">
-
       <h1 className="text-5xl text-center font-bold">
         Apply Job and Good Luck.
       </h1>
@@ -46,15 +65,16 @@ const JobApply = () => {
             className="input"
             name="linkedIn"
             placeholder="LinkedIn URL"
-          /> <br />
+          />{" "}
+          <br />
           <label className="label">Github URL</label>
           <input
             type="url"
             className="input"
             name="github"
             placeholder="Github URL"
-          /> <br />
-
+          />{" "}
+          <br />
           <label className="label">Resume</label>
           <input
             type="url"
@@ -62,7 +82,6 @@ const JobApply = () => {
             name="resume"
             placeholder="Resume URL"
           />
-
           <button className="btn btn-neutral mt-4">Apply</button>
         </form>
       </div>
