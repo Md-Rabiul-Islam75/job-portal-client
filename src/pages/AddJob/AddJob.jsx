@@ -1,15 +1,33 @@
 import React from "react";
 
 const AddJob = () => {
+
+const handleAddJob = e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const initialData = Object.fromEntries(formData.entries());
+
+    console.log(initialData);
+
+    const {min, max, currency, ...newJob} = initialData;
+
+    newJob.salaryRange = { min, max, currency}
+
+    console.log(newJob);
+
+}
+
+    
   return (
     <div>
       <h2 className="text-3xl">Post a new Job</h2>
 
-      <form className="card-body">
+      <form onSubmit={handleAddJob} className="card-body">
         {/* Job title */}
         <label className="label">Job Title</label>
         <input
-          type="email"
+          type="text"
           className="input"
           name="title"
           placeholder="Job Title"
@@ -32,7 +50,7 @@ const AddJob = () => {
           <option>Part-time</option>
         </select>
 
-        {/* Job Type */}
+        {/* Job field */}
         <label className="label">Job Field</label>
         <select defaultValue="Color scheme" className="select select-accent">
           <option disabled={true}>Pick a Job Field</option>
@@ -56,6 +74,7 @@ const AddJob = () => {
           {/* Currency */}
           <div>
             <select
+              name="currency"
               defaultValue="Color scheme"
               className="select select-accent"
             >
@@ -67,29 +86,71 @@ const AddJob = () => {
           </div>
         </div>
 
-
-         {/* Job description */}
+        {/* Job description */}
         <label className="label">Job Description</label>
 
-        <textarea className="textarea" name="description" placeholder="Job Description" required></textarea>
+        <textarea
+          className="textarea"
+          name="description"
+          placeholder="Job Description"
+          required
+        ></textarea>
 
+        {/* Company Name */}
+        <label className="label">Company Name</label>
+        <input
+          type="text"
+          className="input"
+          name="company"
+          placeholder="Company Name"
+        />
 
-
-         {/* Requirements */}
+        {/* Requirements */}
         <label className="label">Job Requirements</label>
-         <textarea className="textarea" name="description" placeholder="put each requirements in a new line" required></textarea>
+        <textarea
+          className="textarea"
+          name="requirements"
+          placeholder="put each requirements in a new line"
+          required
+        ></textarea>
 
-          {/*responsibilities */}
+        {/*responsibilities */}
         <label className="label">Job Responsibilities</label>
-         <textarea className="textarea" name="description" placeholder="Write each responsibility in a new line" required></textarea>
+        <textarea
+          className="textarea"
+          name="responsibilities"
+          placeholder="Write each responsibility in a new line"
+          required
+        ></textarea>
 
+        {/*  HR Name */}
+        <label className="label">HR Name</label>
+        <input
+          type="text"
+          className="input"
+          name="hr_name"
+          placeholder="HR Name"
+        />
 
-       
+        {/*  HR Email */}
+        <label className="label">HR Email</label>
+        <input
+          type="email"
+          className="input"
+          name="hr_email"
+          placeholder="HR email"
+        />
 
+        {/*  Company Logo */}
+        <label className="label">Company Logo</label>
+        <input
+          type="url"
+          className="input"
+          name="company_logo"
+          placeholder="Company Logo"
+        />
 
-   
-
-{/* submit button */}
+        {/* submit button */}
         <button className="btn btn-neutral mt-4">Submit</button>
       </form>
     </div>
