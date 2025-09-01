@@ -1,8 +1,12 @@
 import React from "react";
+import Swal from "sweetalert2";
+import useAuth from "../../hooks/useAuth";
 
 const AddJob = () => {
 
-const handleAddJob = e => {
+    const {user} = useAuth();
+
+  const handleAddJob = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -10,15 +14,37 @@ const handleAddJob = e => {
 
     console.log(initialData);
 
-    const {min, max, currency, ...newJob} = initialData;
+    const { min, max, currency, ...newJob } = initialData;
 
-    newJob.salaryRange = { min, max, currency}
+    newJob.salaryRange = { min, max, currency };
+
+    newJob.requirements = newJob.requirements.split("\n");
+    newJob.responsibilities = newJob.responsibilities.split("\n");
 
     console.log(newJob);
 
-}
+    fetch("http://localhost:5000/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newJob),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Your work has been saved",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          navigate("/myApplications");
+        }
+      });
+  };
 
-    
   return (
     <div>
       <h2 className="text-3xl">Post a new Job</h2>
@@ -43,7 +69,7 @@ const handleAddJob = e => {
 
         {/* Job Type */}
         <label className="label">Job Type</label>
-        <select defaultValue="Color scheme" className="select select-accent">
+        <select defaultValue="Pick a Job type" className="select select-accent">
           <option disabled={true}>Pick a Job type</option>
           <option>Full-time</option>
           <option>Intern</option>
@@ -52,7 +78,7 @@ const handleAddJob = e => {
 
         {/* Job field */}
         <label className="label">Job Field</label>
-        <select defaultValue="Color scheme" className="select select-accent">
+        <select defaultValue="Pick a Job Field" className="select select-accent">
           <option disabled={true}>Pick a Job Field</option>
           <option>Engineering</option>
           <option>Marketing</option>
@@ -75,7 +101,7 @@ const handleAddJob = e => {
           <div>
             <select
               name="currency"
-              defaultValue="Color scheme"
+              defaultValue="Currency"
               className="select select-accent"
             >
               <option>Currency</option>
@@ -138,6 +164,7 @@ const handleAddJob = e => {
           type="email"
           className="input"
           name="hr_email"
+          defaultValue={user?.email}
           placeholder="HR email"
         />
 
