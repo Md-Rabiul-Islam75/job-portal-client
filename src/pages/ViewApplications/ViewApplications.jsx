@@ -1,51 +1,87 @@
-import React from 'react';
-import { useLoaderData } from 'react-router-dom';
+import React from "react";
+import { useLoaderData } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const ViewApplications = () => {
+  const applications = useLoaderData();
 
-    const applications = useLoaderData();
+  console.log(applications);
 
-    console.log(applications);
-    return (
-        <div>
-            <h2 className="text-3xl">Applications for this job: {applications.length}</h2>
-
-            <h1>{applications[0].applicant_email}</h1>
+ const handleStatusUpdate = (e, id) => {
+    console.log(e.target.value, id);
 
 
-            <div className="overflow-x-auto">
-  <table className="table">
-    {/* head */}
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Job</th>
-        <th>Favorite Color</th>
-      </tr>
-    </thead>
-    <tbody>
-      
-      {
-       
-        applications.map((app,index) =>
-            <tr key={index}>
-              <th>{index + 1}</th>
-              <td>{app.applicant_email}</td>
-              <td>{app.job_title}</td>
-              <td>{app.favorite_color}</td>
+    const data = {
+        status: e.target.value
+    }
+
+    fetch(`http://localhost:5000/job_applications/${id}`,{
+        method: 'PATCH',
+        headers: {
+            'content-type': 'application/json' 
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.modifiedCount > 0) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Status has been updated",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          
+        }
+    })
+    .catch(err => console.error(err));
+ }
+
+
+  return (
+    <div>
+      <h2 className="text-3xl">
+        Applications for this job: {applications.length}
+      </h2>
+
+      <h1>{applications[0].applicant_email}</h1>
+
+      <div className="overflow-x-auto">
+        <table className="table">
+          {/* head */}
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Update Status</th>
             </tr>
-        )
-      }
-    </tbody>
-  </table>
-</div>
-
-            
-            
-        </div>
-    );
-
-}
+          </thead>
+          <tbody>
+            {applications.map((app, index) => (
+              <tr key={index}>
+                <th>{index + 1}</th>
+                <td>{app.applicant_email}</td>
+                <td>{app.job_title}</td>
+                <td>
+                  <select
+                  onChange={(e) => handleStatusUpdate(e, app._id)}
+                  defaultValue={app.status || 'Change Status'} className="select select-md">
+                    <option disabled={true}>Change Status</option>
+                    <option>Under Review</option>
+                    <option>Set Interview</option>
+                    <option>Hired</option>
+                                                         <option>Rejected</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 export default ViewApplications;
